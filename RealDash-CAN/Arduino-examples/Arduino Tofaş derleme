@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  RealDash CAN Channel Description (version=2)
+  - Bu dosya Arduino (RealDash CAN protokolü) ile kullanmak üzere örnek bir eşlemedir.
+  - Arduino, RealDash'a "RealDash CAN 44-frame" formatında seri üzerinden veri göndermelidir.
+  - Eğer byte/ID düzenini değiştirirseniz, aşağıdaki <Frame id="..."> satırlarını ona göre düzenleyin.
+--><RealDashCAN version="2">
+  <Frames>
+    <!-- Frame: 0x200 - Temel göstergeler: speed(km/h), rpm, fuel(%) , temp(°C) -->
+    <Frame id="0x200" size="8" description="Gauges: speed, rpm, fuel, temp">
+      <!-- speed: unsigned 16-bit, bytes 0-1, value = km/h (raw / 100 if gönderiliyorsa) -->
+      <Field name="speed" startByte="0" length="2" type="uint" unit="km/h" conversion="v" min="0" max="400"/>
+      <!-- rpm: unsigned 16-bit, bytes 2-3, value = rpm -->
+      <Field name="rpm" startByte="2" length="2" type="uint" unit="rpm" conversion="v" min="0" max="20000"/>
+      <!-- fuel: unsigned 8-bit, byte 4, value = percentage (0-100) -->
+      <Field name="fuel" startByte="4" length="1" type="uint" unit="%" conversion="v" min="0" max="100"/>
+      <!-- temp: signed 8-bit, byte 5, value = °C offset -40 -> raw + (-40) örneği kullanılabilir -->
+      <Field name="temp" startByte="5" length="1" type="int" unit="°C" conversion="v-40" min="-40" max="215"/>
+    </Frame><!-- Frame: 0x201 - Indicator lights (bit-packed) -->
+<Frame id="0x201" size="8" description="Indicator & lamp status (bits)">
+  <!-- Byte 0 bits: b0=left, b1=right, b2=high-beam, b3=low-beam, b4=fog, b5=park -->
+  <Field name="left_indicator" startByte="0" startBit="0" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="right_indicator" startByte="0" startBit="1" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="high_beam" startByte="0" startBit="2" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="low_beam" startByte="0" startBit="3" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="fog_lights" startByte="0" startBit="4" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="park_lights" startByte="0" startBit="5" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <!-- Byte1 bits: b0=oil, b1=battery, b2=handbrake, b3=seatbelt (opsiyonel) -->
+  <Field name="oil_warning" startByte="1" startBit="0" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="battery_warning" startByte="1" startBit="1" lengthBits="1" type="bit" unit="" conversion="v"/>
+  <Field name="handbrake" startByte="1" startBit="2" lengthBits="1" type="bit" unit="" conversion="v"/>
+</Frame>
+
+<!-- Frame: 0x202 - Additional: odometer (km) and trip (optional) -->
+<Frame id="0x202" size="8" description="Odometer/trip">
+  <!-- odometer: unsigned 32-bit little-endian, bytes 0-3 -> value in km -->
+  <Field name="odometer" startByte="0" length="4" type="uint" unit="km" conversion="v" min="0" max="4294967295"/>
+  <!-- trip: unsigned 32-bit bytes 4-7 -> km -->
+  <Field name="trip" startByte="4" length="4" type="uint" unit="km" conversion="v" min="0" max="4294967295"/>
+</Frame>
+
+<!-- Frame: 0x203 - Binary/buttons to/from RealDash (reserved for extras) -->
+<Frame id="0x203" size="8" description="Reserved: spare inputs / outputs">
+  <Field name="spare0" startByte="0" length="1" type="uint" unit="" conversion="v"/>
+</Frame>
+
+  </Frames>
+</RealDashCAN>
